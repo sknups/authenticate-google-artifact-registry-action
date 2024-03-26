@@ -1,11 +1,29 @@
 ---
-name: 'Hello World'
-description: 'Prints "Hello World" to the console.'
+name: 'Authenticate Google Artifact Registry'
+description: 'Allows use of private npm repositories in Google Artifact Registry.'
+
+inputs:
+  workload_identity_provider:
+    description: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+    required: true
+  service_account:
+    description: 'my-service-account@my-project.iam.gserviceaccount.com'
+    required: true
+
 
 runs:
   using: 'composite'
   steps:
 
-    - name: 'Print "Hello World"'
+    - name: Authenticate Google Cloud
+      id: 'auth'
+      uses: 'google-github-actions/auth@v2'
+      with:
+        workload_identity_provider: ${{ inputs.workload_identity_provider }}
+        service_account: ${{ inputs.service_account }}
+
+    - name: Authenticate Artifact Registry
       shell: bash
-      run: echo "Hello World"
+      run: npx --yes google-artifactregistry-auth@latest
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
