@@ -8,7 +8,7 @@ Example:
 
 ```yaml
   - name: Authenticate Google Artifact Registry
-    uses: sknups/authenticate-google-artifact-registry@v1
+    uses: sknups/authenticate-google-artifact-registry-action@v1
     with:
       workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
       service_account: 'my-service-account@my-project.iam.gserviceaccount.com'
