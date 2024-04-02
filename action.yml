@@ -9,6 +9,10 @@ inputs:
   service_account:
     description: 'my-service-account@my-project.iam.gserviceaccount.com'
     required: true
+  erase_credentials:
+    description: 'Prevent subsequent steps being authenticated with Google Cloud'
+    required: false
+    default: 'false'
 
 
 runs:
@@ -21,9 +25,16 @@ runs:
       with:
         workload_identity_provider: ${{ inputs.workload_identity_provider }}
         service_account: ${{ inputs.service_account }}
+        create_credentials_file: true
+        cleanup_credentials: true
 
     - name: Authenticate Artifact Registry
       shell: bash
       run: npx --yes google-artifactregistry-auth@latest
       env:
         GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
+
+    - name: Erase credentials file
+      if: ${{ inputs.erase_credentials == 'true' }}
+      shell: bash
+      run: rm ${{ steps.auth.outputs.credentials_file_path }}
